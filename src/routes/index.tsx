@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useId, useRef, useState, type ReactNode } from "react";
 import { submitFraudIndicators } from "@/lib/submit-fraud-indicators";
+import { Button } from "@/components/ui/button";
+import { ArrowUpRight, Fingerprint, ShieldCheck, UsersRound, CreditCard, Send, Trash2 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -60,17 +62,17 @@ function NumInput({ id, value, onChange, placeholder, invalid, hint }: { id: str
 
 function Result({ tag, value, line1, line2 }: { tag: string; value: number | null; line1: string; line2: string }) {
   return (
-    <div className="mt-8 rounded-lg bg-result p-7 text-result-foreground transition-all duration-500" aria-live="polite">
+    <div className="indicator-result mt-8 border-t border-border pt-6 text-primary" aria-live="polite">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">{tag}</span>
-        <span className="text-[11px] text-result-muted">por 10.000</span>
+        <span className="text-xs font-semibold uppercase tracking-widest text-accent">Resultado {tag}</span>
+        <span className="text-xs text-muted-foreground">por 10.000</span>
       </div>
       {value === null ? (
-        <p className="mt-6 text-sm text-result-muted">Preencha os campos acima para calcular.</p>
+        <div className="mt-3 flex items-center gap-4"><span className="font-display text-5xl text-primary/25">—</span><p className="text-xs text-muted-foreground">Aguardando os valores</p></div>
       ) : (
         <>
-          <p key={value} className="mt-4 font-serif text-6xl num animate-in fade-in duration-300">{fmtRes.format(value)}</p>
-          <p className="mt-3 text-sm leading-relaxed text-result-muted">{line1}<br />{line2}</p>
+          <p key={value} className="mt-4 break-all font-display text-5xl font-semibold num motion-safe:animate-in motion-safe:fade-in duration-300">{fmtRes.format(value)}</p>
+          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{line1}<br />{line2}</p>
         </>
       )}
     </div>
@@ -79,11 +81,15 @@ function Result({ tag, value, line1, line2 }: { tag: string; value: number | nul
 
 function Card({ tag, title, formula, children }: { tag: string; title: string; formula: string; children: ReactNode }) {
   return (
-    <section className="rounded-xl border border-border bg-card p-7 shadow-soft sm:p-10">
-      <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">{tag}</p>
-      <h2 className="mt-2 font-serif text-2xl text-foreground sm:text-3xl">{title}</h2>
-      <p className="mt-3 text-xs text-muted-foreground num">{formula}</p>
-      <div className="mt-8 space-y-6">{children}</div>
+    <section className="indicator-card relative flex flex-col overflow-hidden rounded-lg border border-border bg-card p-6 shadow-soft sm:p-10">
+      <div className="flex items-center justify-between">
+        <p className="rounded-full bg-secondary px-3 py-1.5 font-display text-xs font-semibold uppercase tracking-widest text-accent">Indicador {tag}</p>
+        {tag === "BP 1" ? <UsersRound aria-hidden className="h-7 w-7 text-primary/35" strokeWidth={1.4} /> : <CreditCard aria-hidden className="h-7 w-7 text-accent/60" strokeWidth={1.4} />}
+      </div>
+      <h2 className="mt-5 font-display text-2xl font-semibold leading-snug text-primary sm:text-3xl">{title}</h2>
+      <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{tag === "BP 1" ? "Casos de fraude para cada grupo de 10.000 clientes ativos." : "Transações fraudulentas para cada grupo de 10.000 transações."}</p>
+      <p className="mt-4 border-t border-border pt-4 text-xs leading-relaxed text-muted-foreground num">{formula}</p>
+      <div className="calculator-fields mt-7 flex flex-1 flex-col gap-6">{children}</div>
     </section>
   );
 }
@@ -137,29 +143,31 @@ function Index() {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card">
-        <div className="mx-auto flex max-w-6xl items-center px-6 py-5">
-          <span className="font-serif text-2xl font-semibold tracking-tight text-primary">ACRE<span className="text-accent">fi</span></span>
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-6 py-6">
+          <span className="font-display text-3xl font-bold text-primary">ACRE<span className="text-accent">FI</span></span>
+          <span className="hidden max-w-72 border-l border-border pl-5 text-xs leading-relaxed text-muted-foreground sm:block">Associação Nacional das Instituições de Crédito, Financiamento e Investimento</span>
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-6 py-16 sm:py-24">
-        <div className="max-w-2xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-accent">Ferramenta institucional</p>
-          <h1 className="mt-4 font-serif text-4xl text-foreground sm:text-6xl">Indicadores de Fraudes</h1>
-          <p className="mt-5 text-lg text-muted-foreground">Calcule os indicadores de ocorrências fraudulentas de sua instituição.</p>
-          <p className="mt-3 text-xs text-muted-foreground/80">Os dados preenchidos nesta ferramenta são processados exclusivamente no seu navegador e não são armazenados ou enviados.</p>
+      <main className="mx-auto max-w-6xl px-6 pb-14 pt-12 sm:pt-16">
+        <div className="intro relative border-b border-border pb-10">
+          <Fingerprint aria-hidden className="pointer-events-none absolute right-0 top-0 hidden h-48 w-48 text-accent/10 md:block" strokeWidth={0.7} />
+          <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-accent"><span className="h-px w-7 bg-accent" />Informação & prevenção</p>
+          <h1 className="relative mt-4 max-w-3xl font-display text-4xl font-semibold leading-tight text-primary sm:text-5xl">Indicadores de Fraudes<span className="text-accent">.</span></h1>
+          <p className="relative mt-5 max-w-xl text-base leading-relaxed text-muted-foreground">Ocorrências fraudulentas em perspectiva.<br />Indicadores de clientes e transações da sua instituição.</p>
+          <div className="mt-6 flex items-center gap-2 text-xs font-medium text-accent"><ShieldCheck aria-hidden className="h-4 w-4" />Integridade dos dados<ArrowUpRight aria-hidden className="h-3 w-3" /></div>
         </div>
 
-        <aside className="mt-10 flex max-w-2xl gap-4 rounded-lg border border-border bg-secondary/60 p-5">
+        <aside className="mt-7 flex gap-3 border-l-2 border-accent pl-4">
           <svg aria-hidden viewBox="0 0 24 24" className="mt-0.5 h-5 w-5 shrink-0 text-primary" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M12 3l7 3v6c0 4.5-3 7.8-7 9-4-1.2-7-4.5-7-9V6l7-3z" /><path d="M9 12l2 2 4-4" /></svg>
           <div>
             <p className="text-sm font-medium text-foreground">Privacidade dos dados</p>
-            <p className="mt-1 text-xs leading-relaxed text-muted-foreground">Os valores informados nesta página são utilizados exclusivamente para o cálculo dos indicadores. O processamento ocorre localmente no seu navegador e nenhuma informação preenchida é enviada ou armazenada pelo sistema.</p>
+            <p className="mt-1 max-w-3xl text-xs leading-relaxed text-muted-foreground">O cálculo ocorre no seu navegador, sem armazenamento neste aplicativo. O envio ao serviço externo acontece somente após sua confirmação.</p>
           </div>
         </aside>
 
-        <form className="mt-14 grid gap-8 lg:grid-cols-2" onSubmit={(e) => e.preventDefault()} noValidate>
-          <Card tag="BP 1" title="Casos fraudulentos identificados" formula="BP1 = (casos fraudulentos ÷ carteira ativa) × 10.000">
+        <form className="mt-9 grid gap-8 lg:grid-cols-2" onSubmit={(e) => e.preventDefault()} noValidate>
+          <Card tag="BP 1" title="Fraudes por Clientes" formula="BP1 = (casos fraudulentos ÷ carteira ativa) × 10.000">
             <Field id={id("i1")} label="Instituição Financeira informante"><TextInput id={id("i1")} value={inst1} onChange={setInst1} placeholder="Informe o nome da instituição" /></Field>
             <Field id={id("m1")} label="Mês de referência"><TextInput id={id("m1")} type="month" value={mes1} onChange={setMes1} /></Field>
             <Field id={id("c")} label="Quantidade de casos fraudulentos identificados" hint="Considere os casos identificados envolvendo crédito e transações."
@@ -173,7 +181,7 @@ function Index() {
             <Result tag="BP 1" value={bp1.value} line1="Casos fraudulentos" line2="a cada 10.000 clientes" />
           </Card>
 
-          <Card tag="BP 2" title="Transações fraudulentas identificadas" formula="BP2 = (transações fraudulentas ÷ total de transações) × 10.000">
+          <Card tag="BP 2" title="Fraudes por Transações" formula="BP2 = (transações fraudulentas ÷ total de transações) × 10.000">
             <Field id={id("i2")} label="Instituição Financeira informante"><TextInput id={id("i2")} value={inst2 ?? inst1} onChange={setInst2} placeholder="Informe o nome da instituição" /></Field>
             <Field id={id("m2")} label="Mês de referência"><TextInput id={id("m2")} type="month" value={mes2 ?? mes1} onChange={setMes2} /></Field>
             <Field id={id("t")} label="Quantidade de transações identificadas como fraudulentas"
