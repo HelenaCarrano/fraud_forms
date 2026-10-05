@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useId, useState, type ReactNode } from "react";
+import { useId, useRef, useState, type ReactNode } from "react";
+import { submitFraudIndicators } from "@/lib/submit-fraud-indicators";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -94,10 +95,44 @@ function Index() {
   const [inst2, setInst2] = useState<string | null>(null), [mes2, setMes2] = useState<string | null>(null);
   const [trans, setTrans] = useState(""), [tipo, setTipo] = useState(""), [total, setTotal] = useState("");
   const [confirm, setConfirm] = useState(false);
+  const [sendConfirm, setSendConfirm] = useState(false);
+  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
+  const sendingRef = useRef(false);
+  const submissionIdRef = useRef<string | null>(null);
 
   const bp1 = calc(casos, carteira), bp2 = calc(trans, total);
-  const clear = () => { setInst1(""); setMes1(""); setCasos(""); setCarteira(""); setInst2(null); setMes2(null); setTrans(""); setTipo(""); setTotal(""); setConfirm(false); };
+  const clear = () => { setInst1(""); setMes1(""); setCasos(""); setCarteira(""); setInst2(null); setMes2(null); setTrans(""); setTipo(""); setTotal(""); setConfirm(false); setSendConfirm(false); submissionIdRef.current = null; };
   const id = (s: string) => `${uid}-${s}`;
+  const instituicao = (inst2 ?? inst1).trim() || inst1.trim();
+  const mes = mes2 ?? mes1;
+  const canSend = !!instituicao && /^\d{4}-\d{2}$/.test(mes) && bp1.value !== null && bp2.value !== null;
+
+  const send = async () => {
+    if (sendingRef.current || !canSend) return;
+    sendingRef.current = true;
+    setStatus("sending");
+    submissionIdRef.current ??= crypto.randomUUID();
+    const [y, m] = mes.split("-");
+    try {
+      await submitFraudIndicators({
+        submissionId: submissionIdRef.current,
+        instituicao,
+        mesReferencia: `${m}/${y}`,
+        casosFraudulentos: Number(casos),
+        carteiraAtiva: Number(carteira),
+        transacoesFraudulentas: Number(trans),
+        tipoFraude: tipo.trim(),
+        totalTransacoes: Number(total),
+      });
+      clear();
+      setStatus("success");
+    } catch {
+      setStatus("error");
+    } finally {
+      sendingRef.current = false;
+      setSendConfirm(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -154,7 +189,37 @@ function Index() {
           </Card>
         </form>
 
-        <div className="mt-12 flex flex-wrap items-center justify-center gap-3">
+        <div className="mt-12 flex flex-col items-center gap-4" aria-live="polite">
+          {status === "success" && (
+            <div role="status" className="w-full max-w-xl rounded-lg border border-border bg-secondary/60 p-5 text-center">
+              <p className="text-sm font-medium text-foreground">Informações enviadas com sucesso</p>
+              <p className="mt-1 text-xs text-muted-foreground">Os indicadores foram registrados com sucesso.</p>
+            </div>
+          )}
+          {status === "error" && (
+            <div role="alert" className="w-full max-w-xl rounded-lg border border-destructive/40 bg-card p-5 text-center">
+              <p className="text-sm font-medium text-destructive">Não foi possível enviar as informações</p>
+              <p className="mt-1 text-xs text-muted-foreground">Ocorreu um problema durante o envio. Verifique sua conexão e tente novamente.</p>
+              <button type="button" onClick={send} className="mt-4 rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition hover:opacity-90">Tentar novamente</button>
+            </div>
+          )}
+          {status === "sending" ? (
+            <button type="button" disabled className="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground opacity-80">
+              <span aria-hidden className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground/40 border-t-primary-foreground" />
+              Enviando informações...
+            </button>
+          ) : sendConfirm ? (
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <span className="text-sm text-muted-foreground">Confirma o envio das informações?</span>
+              <button type="button" onClick={send} className="rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition hover:opacity-90">Sim, enviar</button>
+              <button type="button" onClick={() => setSendConfirm(false)} className="rounded-md border border-border px-5 py-2.5 text-sm text-foreground transition hover:bg-secondary">Cancelar</button>
+            </div>
+          ) : status !== "error" && (
+            <button type="button" disabled={!canSend} onClick={() => { setStatus("idle"); setSendConfirm(true); }} className="rounded-md bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40">Enviar informações</button>
+          )}
+        </div>
+
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
           {confirm ? (
             <>
               <span className="text-sm text-muted-foreground">Deseja limpar todos os campos?</span>
