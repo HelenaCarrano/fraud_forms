@@ -1,4 +1,4 @@
-const API_ENDPOINT = import.meta.env.VITE_API_ENDPOINT as string | undefined;
+const API_ENDPOINT = import.meta.env["VITE_API_ENDPOINT"] as string | undefined;
 
 export type FraudIndicatorsPayload = {
   submissionId: string;
