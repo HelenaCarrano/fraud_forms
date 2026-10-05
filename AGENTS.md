@@ -8,3 +8,4 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+- Submissions go to an external Google Apps Script URL via VITE_API_ENDPOINT from src/lib/submit-fraud-indicators.ts; no app storage — form data must never persist.
