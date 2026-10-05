@@ -78,14 +78,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { httpEquiv: "Content-Security-Policy", content: "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' ws: wss:; form-action 'none'; base-uri 'self'; object-src 'none'" },
+      { title: "Indicadores de Fraudes — ACREFI" },
+      { name: "description", content: "Calculadora local de indicadores de fraudes da ACREFI." },
+      { name: "author", content: "ACREFI" },
+      { property: "og:title", content: "Indicadores de Fraudes — ACREFI" },
+      { property: "og:description", content: "Calculadora local de indicadores de fraudes da ACREFI." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
