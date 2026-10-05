@@ -208,22 +208,22 @@ function Index() {
             <div role="alert" className="w-full max-w-xl rounded-lg border border-destructive/40 bg-card p-5 text-center">
               <p className="text-sm font-medium text-destructive">Não foi possível enviar as informações</p>
               <p className="mt-1 text-xs text-muted-foreground">Ocorreu um problema durante o envio. Verifique sua conexão e tente novamente.</p>
-              <button type="button" onClick={send} className="mt-4 rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition hover:opacity-90">Tentar novamente</button>
+              <Button type="button" onClick={send} className="mt-4 rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition hover:opacity-90">Tentar novamente</Button>
             </div>
           )}
           {status === "sending" ? (
-            <button type="button" disabled className="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground opacity-80">
+            <Button type="button" disabled className="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground opacity-80">
               <span aria-hidden className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground/40 border-t-primary-foreground" />
               Enviando informações...
-            </button>
+            </Button>
           ) : sendConfirm ? (
             <div className="flex flex-wrap items-center justify-center gap-3">
               <span className="text-sm text-muted-foreground">Confirma o envio das informações?</span>
-              <button type="button" onClick={send} className="rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition hover:opacity-90">Sim, enviar</button>
-              <button type="button" onClick={() => setSendConfirm(false)} className="rounded-md border border-border px-5 py-2.5 text-sm text-foreground transition hover:bg-secondary">Cancelar</button>
+              <Button type="button" onClick={send} className="rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition hover:opacity-90">Sim, enviar</Button>
+              <Button type="button" onClick={() => setSendConfirm(false)} className="rounded-md border border-border px-5 py-2.5 text-sm text-foreground transition hover:bg-secondary">Cancelar</Button>
             </div>
           ) : status !== "error" && (
-            <button type="button" disabled={!canSend} onClick={() => { setStatus("idle"); setSendConfirm(true); }} className="rounded-md bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40">Enviar informações</button>
+            <Button type="button" disabled={!canSend} onClick={() => { setStatus("idle"); setSendConfirm(true); }} className="rounded-md bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"><Send aria-hidden />Enviar informações</Button>
           )}
         </div>
 
@@ -231,11 +231,11 @@ function Index() {
           {confirm ? (
             <>
               <span className="text-sm text-muted-foreground">Deseja limpar todos os campos?</span>
-              <button type="button" onClick={clear} className="rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition hover:opacity-90">Sim, limpar</button>
-              <button type="button" onClick={() => setConfirm(false)} className="rounded-md border border-border px-5 py-2.5 text-sm text-foreground transition hover:bg-secondary">Cancelar</button>
+              <Button type="button" onClick={clear} className="rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition hover:opacity-90">Sim, limpar</Button>
+              <Button type="button" onClick={() => setConfirm(false)} className="rounded-md border border-border px-5 py-2.5 text-sm text-foreground transition hover:bg-secondary">Cancelar</Button>
             </>
           ) : (
-            <button type="button" onClick={() => setConfirm(true)} className="rounded-md border border-border bg-card px-6 py-2.5 text-sm font-medium text-foreground transition hover:bg-secondary">Limpar dados</button>
+            <Button type="button" onClick={() => setConfirm(true)} className="rounded-md border border-border bg-card px-6 py-2.5 text-sm font-medium text-foreground transition hover:bg-secondary"><Trash2 aria-hidden />Limpar dados</Button>
           )}
         </div>
       </main>
