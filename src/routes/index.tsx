@@ -29,7 +29,7 @@ function calc(part: string, total: string): { value: number | null; error?: stri
   return { value: Number.isFinite(r) ? r : null };
 }
 
-function Field({ label, hint, optional, error, children, id }: { label: string; hint?: string; optional?: boolean; error?: string; children: ReactNode; id: string }) {
+function Field({ label, hint, optional, error, children, id }: { label: string; hint?: string | undefined; optional?: boolean | undefined; error?: string | undefined; children: ReactNode; id: string }) {
   return (
     <div className="space-y-2">
       <div className="flex items-baseline justify-between gap-3">
@@ -49,7 +49,7 @@ function TextInput({ id, value, onChange, placeholder, type = "text" }: { id: st
   return <input id={id} type={type} autoComplete="off" value={value} placeholder={placeholder} onChange={(e) => onChange(e.target.value)} className={inputCls} />;
 }
 
-function NumInput({ id, value, onChange, placeholder, invalid, hint }: { id: string; value: string; onChange: (v: string) => void; placeholder?: string; invalid?: boolean; hint?: boolean }) {
+function NumInput({ id, value, onChange, placeholder, invalid, hint }: { id: string; value: string; onChange: (v: string) => void; placeholder?: string; invalid?: boolean | undefined; hint?: boolean | undefined }) {
   return (
     <input id={id} inputMode="numeric" autoComplete="off" aria-invalid={invalid} aria-describedby={hint ? `${id}-hint` : undefined}
       value={value === "" ? "" : fmtInt.format(Number(value))} placeholder={placeholder}
