@@ -11,7 +11,9 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "build:firebase": "node scripts/build-firebase.mjs",
+    "deploy:firebase": "npm run build:firebase && npx firebase-tools deploy --only hosting"
   },
   "overrides": {
     "rolldown": "1.2.1"
